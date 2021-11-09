@@ -1,4 +1,10 @@
 class Api::V1::UsersController < ApplicationController
+  before_action :check_owner, only: %i[update destroy]
+  def index
+    @users = User.all
+    render json: { users: @users }, status: :ok
+  end
+  end
   def show
     render json: @user
   end
@@ -26,5 +32,8 @@ class Api::V1::UsersController < ApplicationController
   private
   def user_params
     params.require(:user).permit(:email, :password)
+  end
+  def check_owner
+    head :forbidden unless @user.id == current_user&.id
   end
 end
